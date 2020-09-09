@@ -3,38 +3,66 @@
 <head>
   <meta charset="utf-8">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/@zendeskgarden/css-bedrock@7.0.21,npm/@zendeskgarden/css-utilities@4.3.0">
+  <link rel="stylesheet" href="./main.css">
 </head>
 <body>
-  <h2 class="u-semibold u-fs-xl">Hello, World!</h2>
   <script src="https://static.zdassets.com/zendesk_app_framework_sdk/2.0/zaf_sdk.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
     const client = ZAFClient.init();
     client.invoke('resize', { width: '100%', height: '200px' });
-    
-    (async () => {
-      try {
+  </script>
+
+  <script type="module">
+    import { h, Component, render } from 'https://unpkg.com/preact?module';
+    import htm from 'https://unpkg.com/htm?module';
+  
+    // Initialize htm with Preact
+    const html = htm.bind(h);
+  
+    class App extends Component {
+      async setTicketState() {
         const {'ticket.requester.id' : customerID, 'ticket.comments' : ticketComments } = await client.get(['ticket.requester.id', 'ticket.comments' ]);
         const commentsWithImages = ticketComments.filter(comment => comment.imageAttachments.length && comment.author.id === customerID);
-        
-        if(commentsWithImages.length) {
-          const imageURLs = [];
-          commentsWithImages.forEach(comment => {
-            comment.imageAttachments.forEach(image => {
-              imageURLs.push(image.contentUrl);
-            });
-          });
 
-        const request = await axios.post('http://localhost:1818/api/imagefisher/', imageURLs );
-        console.log(request)
-        } else {
-          console.log('No images found.')
-        }
-      } catch (error) {
-        console.error(error)
+        this.setState({customerID, commentsWithImages});
       }
-    })();
 
+      async reverseImageSearch() {
+        await this.setTicketState();
+        const { commentsWithImages } = this.state;
+
+        try {
+          if(commentsWithImages.length) {
+            const imageURLs = [];
+            commentsWithImages.forEach(comment => {
+              comment.imageAttachments.forEach(image => {
+                imageURLs.push(image.contentUrl);
+              });
+            });
+
+            const identicalImages = await axios.post('http://localhost:1818/api/imagefisher/', imageURLs );
+            this.setState({ identicalImages });
+            console.log(identicalImages)
+          } else {
+            this.setState({ noImages: true })
+          }
+        } catch (error) {
+          this.setState({errorMessage: 'Something went wrong fetching image results. Please try again later.'})
+          console.error(error)
+        }
+      }
+  
+      render({ /* PROPS */ }, { matchedImageCount = 0, customerID = '', noImages = false, commentsWithImages = [], identicalImages = [], errorMessage = '' }) {
+        return html`
+          <div class="app">
+            <button onClick=${() => this.reverseImageSearch()}>Add Todo</button>
+          </div>
+        `;
+      }
+    }
+  
+    render(html`<${App} />`, document.body);
   </script>
 </body>
 </html>
