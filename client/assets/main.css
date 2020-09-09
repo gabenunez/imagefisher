@@ -1,3 +1,39 @@
-button {
-    color: red;
+html, body {
+    overflow: auto;
+    height: 100%;
+}
+
+.app {
+    height: 100%;
+    display: flex;
+    background-color: #e9ebed;
+}
+
+.app.center {
+    justify-content: center;
+    align-items: center;
+}
+
+button.image-text  {
+    height: 100%;
+    width: 100%;
+    border: none;
+}
+
+.image-text {
+    text-align: center;
+    display: inline-block;
+}
+
+.hover-effect:hover {
+    cursor: pointer;
+}
+
+.image-text img {
+    height: 125px;
+}
+
+.image-text h1 {
+    font-weight: 700;
+    font-size: 1.4em;
 }

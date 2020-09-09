@@ -29,9 +29,10 @@
       }
 
       async reverseImageSearch() {
+        this.setState({ searchRan: true, requestingImages: true })
         await this.setTicketState();
-        const { commentsWithImages } = this.state;
 
+        const { commentsWithImages } = this.state;
         try {
           if(commentsWithImages.length) {
             const imageURLs = [];
@@ -42,10 +43,11 @@
             });
 
             const identicalImages = await axios.post('http://localhost:1818/api/imagefisher/', imageURLs );
-            this.setState({ identicalImages });
-            console.log(identicalImages)
+            const { results, totalMatchedImages } = identicalImages.data;
+            this.setState({ identicalImages: results, totalMatchedImages, requestingImages: false});
+
           } else {
-            this.setState({ noImages: true })
+            this.setState({ errorMessage: "Sorry, there's no images in the ticket from requester." })
           }
         } catch (error) {
           this.setState({errorMessage: 'Something went wrong fetching image results. Please try again later.'})
@@ -53,15 +55,41 @@
         }
       }
   
-      render({ /* PROPS */ }, { matchedImageCount = 0, customerID = '', noImages = false, commentsWithImages = [], identicalImages = [], errorMessage = '' }) {
+      render({ /* PROPS */ }, { 
+        totalMatchedImages = 0, 
+        customerID = '',
+        searchRan = false,
+        requestingImages = false, 
+        commentsWithImages = [], 
+        identicalImages = {},
+        errorMessage = '' 
+      }) {
+
+        const Search = () => html`
+        <button class="image-text hover-effect" onClick=${() => this.reverseImageSearch()}>
+          <img src="./search.svg" alt="Search" />
+          <h1>Click for Reverse Image Search</h1>
+        </button>`
+
+        const imagesAreGood = () => html`
+        <div class="image-text">
+          <img src="./thumbs-up.svg" alt="Thumbs up" />
+          <h1>Fantastic!</h1>
+          <h1>All images look original.</h1>
+        </div>`
+
         return html`
-          <div class="app">
-            <button onClick=${() => this.reverseImageSearch()}>Add Todo</button>
+          <div class="app ${totalMatchedImages === 0 ? 'center' : ''}">
+            ${(!requestingImages && !totalMatchedImages && !searchRan) && html`<${Search} />` }
+            ${(searchRan && !requestingImages && !totalMatchedImages) && html`<${imagesAreGood} />` }
+            ${(searchRan && !requestingImages && totalMatchedImages) && html`<h1>Oh boy, I got some stuff to show you. ${totalMatchedImages} have simila images.</h1>` }
+            ${requestingImages && html`<h1>Loading...</h1>` }
           </div>
         `;
       }
+
     }
-  
+
     render(html`<${App} />`, document.body);
   </script>
 </body>
