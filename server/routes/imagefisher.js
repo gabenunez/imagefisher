@@ -17,6 +17,7 @@ router.post('/', async (req, res) => {
         const totalMatchedImages = imageSearchResults.filter(item => item.imageMatches.total > 0).length;
         res.json({ totalMatchedImages, results: imageSearchResults })
     } catch(error) {
+        console.error(error)
         res.status(500).json(error)
     }
 });
