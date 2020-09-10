@@ -45,7 +45,8 @@
                 imageURLs.push(image.contentUrl);
             });
 
-            const identicalImages = await axios.post('http://localhost:1818/api/imagefisher/', imageURLs );
+            // Local DEV: 'http://localhost:1818/api/imagefisher/'
+            const identicalImages = await axios.post('https://imagefisher.herokuapp.com/api/imagefisher/', imageURLs );
             const { results, totalMatchedImages } = identicalImages.data;
 
             const imagesWithResults = [...images];
@@ -54,7 +55,6 @@
               imagesWithResults[imageIndex].imageMatches = result.imageMatches;
             });
 
-            console.log(imagesWithResults)
             this.setState({ images: imagesWithResults, totalMatchedImages, requestingImages: false});
 
           } else {
