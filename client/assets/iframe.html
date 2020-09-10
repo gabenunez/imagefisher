@@ -58,7 +58,7 @@
             this.setState({ images: imagesWithResults, totalMatchedImages, requestingImages: false});
 
           } else {
-            this.setState({ errorMessage: "Sorry, there's no images in the ticket from requester." })
+            this.setState({ errorMessage: "There's no images in the ticket from requester." })
           }
         } catch (error) {
           this.setState({errorMessage: 'Something went wrong fetching image results. Please try again later.'})
@@ -86,7 +86,7 @@
         <div class="image-text">
           <img src="./thumbs-up.svg" alt="Thumbs up" />
           <h1>Fantastic!</h1>
-          <h1>All images look original.</h1>
+          <p>All images look original.</p>
         </div>`
 
         const Loader = () => html`
@@ -106,13 +106,20 @@
           <p>Please be patient, this could take a while.</p>
         </div>`
 
+        const ErrorMessaging = ({message}) => html`
+        <div class="image-text">
+          <img src="./attention.svg" alt="Error" />
+          <h1>Uh-Oh!</h1>
+          <p>${message}</p>
+        </div>`
+
         return html`
           <div class="app ${totalMatchedImages === 0 ? 'center' : ''}">
-            ${(!requestingImages && !totalMatchedImages && !searchRan) && html`<${Search} />` }
-            ${(searchRan && !requestingImages && totalMatchedImages === 0) && html`<${NoImageMatches} />` }
-            ${(searchRan && !requestingImages && totalMatchedImages > 0) && html`<h1>BAD! IMAGES EXIST.</h1>` }
-            ${requestingImages && html`<${Loader} />` }
-            ${errorMessage && html`<h1>ERROR</h1>` }
+            ${(!requestingImages && !totalMatchedImages && !searchRan && !errorMessage) && html`<${Search} />` }
+            ${(searchRan && !requestingImages && totalMatchedImages === 0 && !errorMessage) && html`<${NoImageMatches} />` }
+            ${(searchRan && !requestingImages && totalMatchedImages > 0 && !errorMessage) && html`<h1>BAD! IMAGES EXIST.</h1>` }
+            ${requestingImages && !errorMessage && html`<${Loader} />` }
+            ${errorMessage && html`<${ErrorMessaging} message=${errorMessage} />` }
           </div>
         `;
       }
