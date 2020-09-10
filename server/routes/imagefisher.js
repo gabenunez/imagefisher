@@ -13,8 +13,15 @@ router.post('/', async (req, res) => {
             imageSearchResults.push({ originalImageURL: imageURL, imageMatches: {total: matchedImages.length, sources: matchedImages} });
         }
 
+        // Prevent False Positives (Returning "images" without a link)
+        imageSearchResults.forEach(imageSearchResult => {
+            imageSearchResult.imageMatches.sources = imageSearchResult.imageMatches.sources.filter(source => source.url);
+            imageSearchResult.imageMatches.total = imageSearchResult.imageMatches.sources.length;
+        });
 
+        console.log(imageSearchResults)
         const totalMatchedImages = imageSearchResults.filter(item => item.imageMatches.total > 0).length;
+
         res.json({ totalMatchedImages, results: imageSearchResults })
     } catch(error) {
         console.error(error)
