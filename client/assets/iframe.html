@@ -30,7 +30,6 @@
           images = images.concat(comments.imageAttachments);
         });
 
-        console.log(images)
         this.setState({customerID, images});
       }
 
@@ -38,8 +37,8 @@
         this.setState({ searchRan: true, requestingImages: true })
         await this.setTicketState();
 
-        const { images } = this.state;
         try {
+          const { images } = this.state;
           if(images.length) {
             const imageURLs = [];
             images.forEach(image => {
@@ -48,7 +47,15 @@
 
             const identicalImages = await axios.post('http://localhost:1818/api/imagefisher/', imageURLs );
             const { results, totalMatchedImages } = identicalImages.data;
-            this.setState({ identicalImages: results, totalMatchedImages, requestingImages: false});
+
+            const imagesWithResults = [...images];
+            
+            results.forEach(result => {
+              const imageIndex = imagesWithResults.findIndex(image => image.contentUrl === result.originalImageURL);
+              imagesWithResults[imageIndex].imageMatches = result.imageMatches;
+            });
+
+            this.setState({ images: imagesWithResults, totalMatchedImages, requestingImages: false});
 
           } else {
             this.setState({ errorMessage: "Sorry, there's no images in the ticket from requester." })
@@ -66,7 +73,6 @@
         requestingImages = false, 
         commentsWithImages = [], 
         images = [],
-        identicalImages = {},
         errorMessage = '' 
       }) {
 
