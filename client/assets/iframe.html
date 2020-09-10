@@ -49,12 +49,12 @@
             const { results, totalMatchedImages } = identicalImages.data;
 
             const imagesWithResults = [...images];
-            
             results.forEach(result => {
               const imageIndex = imagesWithResults.findIndex(image => image.contentUrl === result.originalImageURL);
               imagesWithResults[imageIndex].imageMatches = result.imageMatches;
             });
 
+            console.log(imagesWithResults)
             this.setState({ images: imagesWithResults, totalMatchedImages, requestingImages: false});
 
           } else {
@@ -76,48 +76,78 @@
         errorMessage = '' 
       }) {
 
+        const imageCard = ({image, matches}) => html`
+          <div class="image-container">
+            <img src="${image}" />
+          </div>
+          <div class="image-links">
+          ${matches.map((imageMatch, index) => html`<a target="_blank" href="${imageMatch.url}">${index + 1}</a>`)}
+          </div>
+        `;
+
+        const ImagesFound = () => html`
+          <div id="image-header">
+            <h1>${this.state.totalMatchedImages} Images Matched</h1>
+            <p>Each number represents a matched image result.</p>
+          </div>
+          <ul id="image-matches">
+            ${this.state.images.map(image => {
+              return image.imageMatches.total > 0 ?
+                html`<li key=${image.filename}><${imageCard} image=${image.thumbnailUrl} matches=${image.imageMatches.sources} /></li>` 
+                : '';
+            })}
+          </ul>
+        `;
+
         const Search = () => html`
         <button class="image-text hover-effect" onClick=${() => this.reverseImageSearch()}>
           <img src="./search.svg" alt="Search" />
-          <h1>Click for Reverse Image Search</h1>
-        </button>`
+          <h1>Start Reverse Image Search</h1>
+          <small>(Searches all of the ticket requester's attachments)</small>
+        </button>`;
 
         const NoImageMatches = () => html`
-        <div class="image-text">
-          <img src="./thumbs-up.svg" alt="Thumbs up" />
-          <h1>Fantastic!</h1>
-          <p>All images look original.</p>
-        </div>`
+        <div class="flex-center">
+          <div class="image-text">
+            <img src="./thumbs-up.svg" alt="Thumbs up" />
+            <h1>Fantastic!</h1>
+            <p>All images look original.</p>
+          </div>
+        </div>`;
 
         const Loader = () => html`
-        <div class="image-text">
-          <div class="sk-cube-grid">
-            <div class="sk-cube sk-cube1"></div>
-            <div class="sk-cube sk-cube2"></div>
-            <div class="sk-cube sk-cube3"></div>
-            <div class="sk-cube sk-cube4"></div>
-            <div class="sk-cube sk-cube5"></div>
-            <div class="sk-cube sk-cube6"></div>
-            <div class="sk-cube sk-cube7"></div>
-            <div class="sk-cube sk-cube8"></div>
-            <div class="sk-cube sk-cube9"></div>
+        <div class="flex-center">
+          <div class="image-text">
+            <div class="sk-cube-grid">
+              <div class="sk-cube sk-cube1"></div>
+              <div class="sk-cube sk-cube2"></div>
+              <div class="sk-cube sk-cube3"></div>
+              <div class="sk-cube sk-cube4"></div>
+              <div class="sk-cube sk-cube5"></div>
+              <div class="sk-cube sk-cube6"></div>
+              <div class="sk-cube sk-cube7"></div>
+              <div class="sk-cube sk-cube8"></div>
+              <div class="sk-cube sk-cube9"></div>
+            </div>
+            <h1>Searching...</h1>
+            <p>Please be patient, this could take a while.</p>
           </div>
-          <h1>Searching...</h1>
-          <p>Please be patient, this could take a while.</p>
-        </div>`
+        </div>`;
 
         const ErrorMessaging = ({message}) => html`
-        <div class="image-text">
-          <img src="./attention.svg" alt="Error" />
-          <h1>Uh-Oh!</h1>
-          <p>${message}</p>
-        </div>`
+        <div class="flex-center">
+          <div class="image-text">
+            <img src="./attention.svg" alt="Error" />
+            <h1>Uh-Oh!</h1>
+            <p>${message}</p>
+          </div>
+        </div>`;
 
         return html`
           <div class="app ${totalMatchedImages === 0 ? 'center' : ''}">
             ${(!requestingImages && !totalMatchedImages && !searchRan && !errorMessage) && html`<${Search} />` }
             ${(searchRan && !requestingImages && totalMatchedImages === 0 && !errorMessage) && html`<${NoImageMatches} />` }
-            ${(searchRan && !requestingImages && totalMatchedImages > 0 && !errorMessage) && html`<h1>BAD! IMAGES EXIST.</h1>` }
+            ${(searchRan && !requestingImages && totalMatchedImages > 0 && !errorMessage) && html`<${ImagesFound} />` }
             ${requestingImages && !errorMessage && html`<${Loader} />` }
             ${errorMessage && html`<${ErrorMessaging} message=${errorMessage} />` }
           </div>

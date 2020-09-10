@@ -1,23 +1,26 @@
 html, body {
 	overflow: auto;
 	height: 100%;
-}
-
-.app {
-	height: 100%;
-	display: flex;
 	background-color: #e9ebed;
 }
 
 .app.center {
 	justify-content: center;
 	align-items: center;
+	height: 100%;
 }
 
 button.image-text {
 	height: 100%;
 	width: 100%;
 	border: none;
+}
+
+.flex-center {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
 }
 
 .image-text {
@@ -33,7 +36,7 @@ button.image-text {
 	height: 125px;
 }
 
-.image-text h1 {
+h1 {
 	font-weight: 700;
 	font-size: 1.4em;
 }
@@ -118,4 +121,51 @@ button.image-text {
 		-webkit-transform: scale3D(0, 0, 1);
 		transform: scale3D(0, 0, 1);
 	}
+}
+
+#image-matches {
+	display: flex;
+    flex-wrap: wrap;
+}
+
+#image-matches {
+	display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    text-align: center;
+    align-items: center;
+    margin: 0 auto;
+    justify-content: space-between;
+    width: 100%;
+}
+
+#image-matches li {
+	flex: 0 0 33%;
+}
+
+#image-matches a {
+	background-color: #797979;
+    margin: 0 2px;
+    color: white;
+    padding: 0 3px;
+    border-radius: 3px;
+    font-size: 16px;
+	display: inline-block;
+	text-decoration: none;
+}
+
+#image-matches a:hover {
+	background-color: #7979796e;
+}
+
+.image-container {
+    height: 65px;
+    justify-content: center;
+    display: inline-flex;
+    align-items: center;
+}
+
+#image-header {
+    text-align: center;
+    margin: 10px 0;
 }
