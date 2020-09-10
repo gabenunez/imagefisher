@@ -19,7 +19,6 @@ router.post('/', async (req, res) => {
             imageSearchResult.imageMatches.total = imageSearchResult.imageMatches.sources.length;
         });
 
-        console.log(imageSearchResults)
         const totalMatchedImages = imageSearchResults.filter(item => item.imageMatches.total > 0).length;
 
         res.json({ totalMatchedImages, results: imageSearchResults })
