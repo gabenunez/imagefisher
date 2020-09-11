@@ -2,11 +2,12 @@
 
 ImageFisher is a Zendesk app that runs a reverse image search on all attached images from the requester of a ticket using Puppeteer to scrape Google image search results. Hopefully this can be used to prevent fraudulent claims that require images as proof. 
 
+Oh! and before I forget, this also utilizes Preact (with HTM) for the frontend and NodeJS in the back.
+
 ## Requirements
 
 - [Zendesk apps tools](https://develop.zendesk.com/hc/en-us/articles/360001075048)
 - Node *(tested on 12.3)*
-
 
 ## Usage
 
