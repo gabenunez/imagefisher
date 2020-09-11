@@ -4,6 +4,8 @@ ImageFisher is a Zendesk app that runs a reverse image search on all attached im
 
 Oh! and before I forget, this also utilizes Preact (with HTM) for the frontend and NodeJS in the back.
 
+![Screenshot](https://raw.githubusercontent.com/gabenunez/imagefisher/master/imageFisher.JPG)
+
 ## Requirements
 
 - [Zendesk apps tools](https://develop.zendesk.com/hc/en-us/articles/360001075048)
